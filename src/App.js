@@ -13,12 +13,15 @@ import {
 } from "@material-ui/core";
 import Table from "./Components/Table";
 import { sortData } from "./util";
+import "leaflet/dist/leaflet.css";
 
 function App() {
   const [countries, setCountries] = useState([]); //Setting variable to loop through with API call to get all countries in the world
   const [country, setCountry] = useState("worldwide"); //Setting default value for drop down box to "WorldWide"
   const [countryInfo, setCountryInfo] = useState({}); //Setting variables for individual countries entire information from API
   const [tableData, setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({ lat: 34.80756, lng: -40.4796 });
+  const [mapZoom, setMapZoom] = useState(3);
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -26,7 +29,7 @@ function App() {
       .then((data) => {
         setCountryInfo(data);
       });
-  });
+  }, []);
 
   useEffect(() => {
     //async -> send a request, wait for it, do something with it
@@ -50,19 +53,26 @@ function App() {
   //Function to store when we click {SELECT} a new country in the drop down.
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
-    setCountry(countryCode);
 
     //Make another call to the specific country we select
     const url =
       countryCode === "worldwide"
         ? "https://disease.sh/v3/covid-19/all"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
+    console.log(countryCode);
+    console.log(url);
 
     await fetch(url)
       .then((response) => response.json())
       .then((data) => {
         setCountry(countryCode);
         setCountryInfo(data);
+        console.log(data);
+
+        console.log(countryInfo);
+
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(4);
       });
   };
 
@@ -102,7 +112,7 @@ function App() {
             total={countryInfo.deaths}
           />
         </div>
-        <Map />
+        <Map center={mapCenter} zoom={mapZoom} />
       </div>
       <Card className="app__right">
         <CardContent>
