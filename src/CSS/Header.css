@@ -1,0 +1,12 @@
+.app__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  justify-content: space-between;
+  color: #32e0c4;
+}
+
+.app__dropdown {
+  background-color: lightgray;
+}
